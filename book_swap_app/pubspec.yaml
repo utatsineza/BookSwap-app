@@ -1,0 +1,28 @@
+name: book_swap_app   # <-- required field, all lowercase, underscores allowed
+description: A Flutter app for swapping books among students
+publish_to: "none"   # since this is not a package you want to publish
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+  firebase_core: ^2.25.0
+  firebase_auth: ^4.7.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.1.0
+  flutter_bloc: ^9.1.0
+  uuid: ^3.0.7
+  bloc: ^9.0.0
+  equatable: ^2.0.5
+  image_picker: ^1.1.1
+
+  # add other dependencies as needed
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1
