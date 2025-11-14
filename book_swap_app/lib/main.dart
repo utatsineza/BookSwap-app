@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // <-- make sure this exists
+
 import 'providers/auth_provider.dart';
 import 'providers/listings_provider.dart';
 import 'presentation/screens/browse_screen.dart';
@@ -9,16 +12,23 @@ import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/auth/signup_screen.dart';
 
 // Toggle this to true when enabling Firebase
-const bool useFirebase = false;
+const bool useFirebase = true;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // if (useFirebase) {
-  //   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // }
+
+  if (useFirebase) {
+    try {
+      await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform);
+      print("✅ Firebase initialized successfully");
+    } catch (e) {
+      print("❌ Firebase initialization error: $e");
+    }
+  }
+
   runApp(const BookSwapApp());
 }
-
 
 class BookSwapApp extends StatelessWidget {
   const BookSwapApp({super.key});
@@ -28,7 +38,10 @@ class BookSwapApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (ctx) => ListingsProvider(useFirebase: useFirebase, auth: ctx.read<AuthProvider>())),
+        ChangeNotifierProvider(
+          create: (ctx) => ListingsProvider(
+              useFirebase: useFirebase, auth: ctx.read<AuthProvider>()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -48,6 +61,7 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _selected = 0;
+
   static const _screens = [
     BrowseScreen(),
     MyListingsScreen(),
@@ -64,9 +78,11 @@ class _MainNavigationState extends State<MainNavigation> {
         onTap: (i) => setState(() => _selected = i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Browse'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'My Listings'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.library_books), label: 'My Listings'),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chats'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );
@@ -76,5 +92,6 @@ class _MainNavigationState extends State<MainNavigation> {
 class ChatsPlaceholder extends StatelessWidget {
   const ChatsPlaceholder({super.key});
   @override
-  Widget build(BuildContext context) => const Center(child: Text('Chats - (optional)'));
+  Widget build(BuildContext context) =>
+      const Center(child: Text('Chats - (optional)'));
 }
