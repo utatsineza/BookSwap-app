@@ -1,25 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/listings/listings_bloc.dart';
-import '../../blocs/listings/listings_event.dart';
 import '../../blocs/listings/listings_state.dart';
-import '../../models/book.dart';
 
-class BrowseScreen extends StatefulWidget {
+class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
-
-  @override
-  State<BrowseScreen> createState() => _BrowseScreenState();
-}
-
-class _BrowseScreenState extends State<BrowseScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Trigger the LoadListingsEvent after the widget is initialized
-    context.read<ListingsBloc>().add(LoadListings());
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +12,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
       appBar: AppBar(title: const Text('Browse Books')),
       body: BlocBuilder<ListingsBloc, ListingsState>(
         builder: (context, state) {
-          if (state is ListingsLoading) {
+          if (state is ListingsLoading || state is ListingsInitial) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is ListingsLoaded) {
             final books = state.books;
@@ -45,7 +30,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               },
             );
           } else if (state is ListingsError) {
-            return Center(child: Text(state.message));
+            return Center(child: Text('Error: ${state.message}'));
           }
           return const SizedBox.shrink();
         },

@@ -1,10 +1,10 @@
+import 'package:book_swap_app/blocs/listings/listings_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'blocs/auth/auth_bloc.dart';
 import 'blocs/listings/listings_bloc.dart';
-import 'blocs/listings/listings_event.dart';
 import 'services/firebase_auth_service.dart';
 import 'data/listings_service.dart';
 import 'presentation/screens/browse_screen.dart';

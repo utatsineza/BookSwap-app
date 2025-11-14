@@ -7,24 +7,28 @@ import '../../data/listings_service.dart';
 
 class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   final ListingsService service;
-  StreamSubscription? _sub;
+  StreamSubscription<List<Book>>? _sub;
 
   ListingsBloc({required this.service}) : super(ListingsInitial()) {
     on<LoadListings>(_onLoad);
     on<CreateListing>(_onCreate);
-    on<_ListingsUpdated>(_onListingsUpdated); // internal event
+    on<_ListingsUpdated>(_onListingsUpdated);
   }
 
-  void _onLoad(LoadListings event, Emitter<ListingsState> emit) {
+  Future<void> _onLoad(LoadListings event, Emitter<ListingsState> emit) async {
     emit(ListingsLoading());
-    _sub?.cancel();
+    await _sub?.cancel();
     _sub = service.streamAllBooks().listen(
-      (books) => add(_ListingsUpdated(books)), // dispatch internal event
+      (books) => add(_ListingsUpdated(books)),
       onError: (err) => emit(ListingsError(err.toString())),
     );
   }
 
-  void _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
+  void _onListingsUpdated(_ListingsUpdated event, Emitter<ListingsState> emit) {
+    emit(ListingsLoaded(event.books));
+  }
+
+  Future<void> _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
     try {
       await service.createBook(
         title: event.title,
@@ -36,10 +40,6 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     } catch (err) {
       emit(ListingsError(err.toString()));
     }
-  }
-
-  void _onListingsUpdated(_ListingsUpdated event, Emitter<ListingsState> emit) {
-    emit(ListingsLoaded(event.books));
   }
 
   @override
