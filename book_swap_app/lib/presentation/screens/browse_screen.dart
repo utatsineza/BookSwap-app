@@ -15,28 +15,24 @@ class BrowseScreen extends StatelessWidget {
           if (state is ListingsLoading || state is ListingsInitial) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (state is ListingsError) {
             return Center(child: Text('Error: ${state.message}'));
           }
-
           if (state is ListingsLoaded) {
             if (state.books.isEmpty) {
               return const Center(child: Text('No books available.'));
             }
-
             return ListView.builder(
               itemCount: state.books.length,
               itemBuilder: (context, index) {
                 final book = state.books[index];
                 return ListTile(
                   title: Text(book.title),
-                  subtitle: Text(book.author),
+                  subtitle: Text('${book.author} • ${book.condition}'),
                 );
               },
             );
           }
-
           return const SizedBox.shrink();
         },
       ),

@@ -17,32 +17,25 @@ class MyListingsScreen extends StatelessWidget {
           if (state is ListingsLoading || state is ListingsInitial) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (state is ListingsError) {
             return Center(child: Text('Error: ${state.message}'));
           }
-
           if (state is ListingsLoaded) {
-            final myBooks = state.books
-                .where((book) => book.ownerId == _currentUserId)
-                .toList();
-
+            final myBooks = state.books.where((b) => b.ownerId == _currentUserId).toList();
             if (myBooks.isEmpty) {
               return const Center(child: Text('You have no listings.'));
             }
-
             return ListView.builder(
               itemCount: myBooks.length,
               itemBuilder: (context, index) {
                 final book = myBooks[index];
                 return ListTile(
                   title: Text(book.title),
-                  subtitle: Text("${book.author} • ${book.condition}"),
+                  subtitle: Text('${book.author} • ${book.condition}'),
                 );
               },
             );
           }
-
           return const SizedBox.shrink();
         },
       ),

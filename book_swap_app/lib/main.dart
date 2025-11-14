@@ -2,18 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'blocs/listings/listings_bloc.dart';
 import 'blocs/listings/listings_event.dart';
-import 'blocs/auth/auth_bloc.dart';
-import 'services/firebase_auth_service.dart';
 import 'data/listings_service.dart';
 import 'presentation/screens/browse_screen.dart';
 import 'presentation/screens/my_listings_screen.dart';
-import 'presentation/screens/chats_screen.dart';
-import 'presentation/screens/settings_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Keep if you are using Firebase
+void main() {
   runApp(const BookSwapApp());
 }
 
@@ -22,22 +15,12 @@ class BookSwapApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => AuthBloc(authService: FirebaseAuthService()),
-        ),
-        BlocProvider(
-          create: (_) => ListingsBloc(service: ListingsService())..add(LoadListings()),
-        ),
-      ],
+    return BlocProvider(
+      create: (_) => ListingsBloc(service: ListingsService())..add(LoadListings()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'BookSwap',
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(primarySwatch: Colors.deepPurple),
         home: const MainNavigation(),
       ),
     );
@@ -57,15 +40,9 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _screens = const [
     BrowseScreen(),
     MyListingsScreen(),
-    ChatsScreen(),
-    SettingsScreen(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +51,11 @@ class _MainNavigationState extends State<MainNavigation> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.deepPurple,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Browse'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'My Listings'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chats'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

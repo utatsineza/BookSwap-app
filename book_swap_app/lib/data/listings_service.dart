@@ -8,7 +8,7 @@ class ListingsService {
       title: '1984',
       author: 'George Orwell',
       condition: 'Good',
-      coverImage: 'https://example.com/1984.jpg',
+      coverImage: '',
       ownerId: 'user_123',
     ),
     Book(
@@ -16,7 +16,7 @@ class ListingsService {
       title: 'The Hobbit',
       author: 'J.R.R. Tolkien',
       condition: 'Fair',
-      coverImage: 'https://example.com/hobbit.jpg',
+      coverImage: '',
       ownerId: 'user_456',
     ),
     Book(
@@ -24,7 +24,7 @@ class ListingsService {
       title: 'Pride and Prejudice',
       author: 'Jane Austen',
       condition: 'Excellent',
-      coverImage: 'https://example.com/pride.jpg',
+      coverImage: '',
       ownerId: 'user_123',
     ),
   ];
@@ -32,7 +32,6 @@ class ListingsService {
   final _controller = StreamController<List<Book>>.broadcast();
 
   ListingsService() {
-    // emit initial books
     _controller.add(_books);
   }
 
@@ -55,6 +54,6 @@ class ListingsService {
       ownerId: ownerId,
     );
     _books.add(newBook);
-    _controller.add(_books); // update stream
+    _controller.add(_books);
   }
 }

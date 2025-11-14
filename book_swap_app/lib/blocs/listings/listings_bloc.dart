@@ -29,20 +29,15 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   }
 
   Future<void> _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
-    try {
-      // generate a dummy ID using timestamp
-      final newId = DateTime.now().millisecondsSinceEpoch.toString();
-      await service.createBook(
-        id: newId,
-        title: event.title,
-        author: event.author,
-        condition: event.condition,
-        coverImage: event.coverImage,
-        ownerId: event.ownerId,
-      );
-    } catch (err) {
-      emit(ListingsError(err.toString()));
-    }
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    await service.createBook(
+      id: id,
+      title: event.title,
+      author: event.author,
+      condition: event.condition,
+      coverImage: event.coverImage,
+      ownerId: event.ownerId,
+    );
   }
 
   @override
@@ -52,7 +47,6 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   }
 }
 
-// internal event for updates
 class _ListingsUpdated extends ListingsEvent {
   final List<Book> books;
   _ListingsUpdated(this.books);
