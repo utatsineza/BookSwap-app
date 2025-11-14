@@ -1,62 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/listings_provider.dart';
 import 'presentation/screens/browse_screen.dart';
 import 'presentation/screens/my_listings_screen.dart';
-import 'presentation/screens/chats_screen.dart';
 import 'presentation/screens/settings_screen.dart';
+import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/screens/auth/signup_screen.dart';
 
-void main() {
+// Toggle this to true when enabling Firebase
+const bool useFirebase = false;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // if (useFirebase) {
+  //   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // }
   runApp(const BookSwapApp());
 }
+
 
 class BookSwapApp extends StatelessWidget {
   const BookSwapApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'BookSwap',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (ctx) => ListingsProvider(useFirebase: useFirebase, auth: ctx.read<AuthProvider>())),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'BookSwap',
+        theme: ThemeData(primarySwatch: Colors.deepPurple, useMaterial3: true),
+        home: const MainNavigation(),
       ),
-      home: const MainNavigation(),
     );
   }
 }
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
-
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = const [
+  int _selected = 0;
+  static const _screens = [
     BrowseScreen(),
     MyListingsScreen(),
-    ChatsScreen(),
+    ChatsPlaceholder(),
     SettingsScreen(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: _screens[_selected],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
+        currentIndex: _selected,
+        onTap: (i) => setState(() => _selected = i),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Browse'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'My Listings'),
@@ -66,4 +71,10 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
     );
   }
+}
+
+class ChatsPlaceholder extends StatelessWidget {
+  const ChatsPlaceholder({super.key});
+  @override
+  Widget build(BuildContext context) => const Center(child: Text('Chats - (optional)'));
 }

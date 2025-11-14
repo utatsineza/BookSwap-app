@@ -1,54 +1,32 @@
 import 'package:flutter/material.dart';
-import 'create_listing_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/listings_provider.dart';
+import '../../providers/auth_provider.dart';
+import '../../models/book.dart';
 
-class MyListingsScreen extends StatefulWidget {
+class MyListingsScreen extends StatelessWidget {
   const MyListingsScreen({super.key});
 
   @override
-  State<MyListingsScreen> createState() => _MyListingsScreenState();
-}
-
-class _MyListingsScreenState extends State<MyListingsScreen> {
-  List<Map<String, String>> myBooks = [
-    {"title": "My Book 1", "author": "Me", "condition": "New"},
-    {"title": "My Book 2", "author": "Me", "condition": "Used"},
-  ];
-
-  void _addBook(Map<String, String> book) {
-    setState(() {
-      myBooks.add(book);
-    });
-  }
-
-  void _openCreateListing() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateListingScreen(onCreate: _addBook),
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final authId = context.watch<AuthProvider>().userId;
+    final myBooks = context.watch<ListingsProvider>().books.where((b) => b.ownerId == authId).toList();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Listings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _openCreateListing,
-          )
-        ],
-      ),
+      appBar: AppBar(title: const Text('My Listings')),
       body: ListView.builder(
         itemCount: myBooks.length,
-        itemBuilder: (context, index) {
-          final book = myBooks[index];
-          return ListTile(
-            leading: const Icon(Icons.library_books),
-            title: Text(book['title']!),
-            subtitle: Text("${book['author']} • ${book['condition']}"),
+        itemBuilder: (ctx, i) {
+          final b = myBooks[i];
+          return Card(
+            margin: const EdgeInsets.all(8),
+            child: ListTile(
+              title: Text(b.title),
+              subtitle: Text('${b.author} • ${b.condition}'),
+              trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => context.read<ListingsProvider>().deleteBook(b.id)),
+            ),
           );
         },
       ),
