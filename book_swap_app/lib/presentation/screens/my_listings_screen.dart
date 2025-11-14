@@ -6,7 +6,7 @@ import '../../blocs/listings/listings_state.dart';
 class MyListingsScreen extends StatelessWidget {
   const MyListingsScreen({super.key});
 
-  final String _currentUserId = "user_123"; // replace with AuthBloc user later
+  final String _currentUserId = "user_123";
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class MyListingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('My Listings')),
       body: BlocBuilder<ListingsBloc, ListingsState>(
         builder: (context, state) {
-          if (state is ListingsInitial || state is ListingsLoading) {
+          if (state is ListingsLoading || state is ListingsInitial) {
             return const Center(child: CircularProgressIndicator());
           }
 

@@ -17,7 +17,6 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
 
   Future<void> _onLoad(LoadListings event, Emitter<ListingsState> emit) async {
     emit(ListingsLoading());
-
     await _sub?.cancel();
     _sub = service.streamAllBooks().listen(
       (books) => add(_ListingsUpdated(books)),
@@ -31,7 +30,10 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
 
   Future<void> _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
     try {
+      // generate a dummy ID using timestamp
+      final newId = DateTime.now().millisecondsSinceEpoch.toString();
       await service.createBook(
+        id: newId,
         title: event.title,
         author: event.author,
         condition: event.condition,
@@ -50,6 +52,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   }
 }
 
+// internal event for updates
 class _ListingsUpdated extends ListingsEvent {
   final List<Book> books;
   _ListingsUpdated(this.books);

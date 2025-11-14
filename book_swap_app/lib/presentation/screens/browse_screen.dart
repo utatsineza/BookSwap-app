@@ -12,7 +12,7 @@ class BrowseScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Browse Books')),
       body: BlocBuilder<ListingsBloc, ListingsState>(
         builder: (context, state) {
-          if (state is ListingsInitial || state is ListingsLoading) {
+          if (state is ListingsLoading || state is ListingsInitial) {
             return const Center(child: CircularProgressIndicator());
           }
 
