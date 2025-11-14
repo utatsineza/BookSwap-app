@@ -12,11 +12,12 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   ListingsBloc({required this.service}) : super(ListingsInitial()) {
     on<LoadListings>(_onLoad);
     on<CreateListing>(_onCreate);
-    on<_ListingsUpdated>(_onListingsUpdated);
+    on<_ListingsUpdated>(_onUpdated);
   }
 
   Future<void> _onLoad(LoadListings event, Emitter<ListingsState> emit) async {
     emit(ListingsLoading());
+
     await _sub?.cancel();
     _sub = service.streamAllBooks().listen(
       (books) => add(_ListingsUpdated(books)),
@@ -24,7 +25,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     );
   }
 
-  void _onListingsUpdated(_ListingsUpdated event, Emitter<ListingsState> emit) {
+  void _onUpdated(_ListingsUpdated event, Emitter<ListingsState> emit) {
     emit(ListingsLoaded(event.books));
   }
 
@@ -49,7 +50,6 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   }
 }
 
-// Internal private event for Bloc stream updates
 class _ListingsUpdated extends ListingsEvent {
   final List<Book> books;
   _ListingsUpdated(this.books);

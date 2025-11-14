@@ -12,26 +12,31 @@ class BrowseScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Browse Books')),
       body: BlocBuilder<ListingsBloc, ListingsState>(
         builder: (context, state) {
-          if (state is ListingsLoading || state is ListingsInitial) {
+          if (state is ListingsInitial || state is ListingsLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ListingsLoaded) {
-            final books = state.books;
-            if (books.isEmpty) {
+          }
+
+          if (state is ListingsError) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+
+          if (state is ListingsLoaded) {
+            if (state.books.isEmpty) {
               return const Center(child: Text('No books available.'));
             }
+
             return ListView.builder(
-              itemCount: books.length,
+              itemCount: state.books.length,
               itemBuilder: (context, index) {
-                final book = books[index];
+                final book = state.books[index];
                 return ListTile(
                   title: Text(book.title),
                   subtitle: Text(book.author),
                 );
               },
             );
-          } else if (state is ListingsError) {
-            return Center(child: Text('Error: ${state.message}'));
           }
+
           return const SizedBox.shrink();
         },
       ),
