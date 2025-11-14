@@ -1,39 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/listings/listings_bloc.dart';
-import '../../blocs/listings/listings_state.dart';
 
 class BrowseScreen extends StatelessWidget {
   const BrowseScreen({super.key});
+
+  final List<Map<String, String>> dummyBooks = const [
+    {"title": "Book One", "author": "Author A"},
+    {"title": "Book Two", "author": "Author B"},
+    {"title": "Book Three", "author": "Author C"},
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Browse Books')),
-      body: BlocBuilder<ListingsBloc, ListingsState>(
-        builder: (context, state) {
-          if (state is ListingsLoading || state is ListingsInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is ListingsError) {
-            return Center(child: Text('Error: ${state.message}'));
-          }
-          if (state is ListingsLoaded) {
-            if (state.books.isEmpty) {
-              return const Center(child: Text('No books available.'));
-            }
-            return ListView.builder(
-              itemCount: state.books.length,
-              itemBuilder: (context, index) {
-                final book = state.books[index];
-                return ListTile(
-                  title: Text(book.title),
-                  subtitle: Text('${book.author} • ${book.condition}'),
-                );
-              },
-            );
-          }
-          return const SizedBox.shrink();
+      body: ListView.builder(
+        itemCount: dummyBooks.length,
+        itemBuilder: (context, index) {
+          final book = dummyBooks[index];
+          return ListTile(
+            leading: const Icon(Icons.menu_book),
+            title: Text(book['title']!),
+            subtitle: Text(book['author']!),
+          );
         },
       ),
     );

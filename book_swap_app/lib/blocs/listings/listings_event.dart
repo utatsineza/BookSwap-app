@@ -8,6 +8,7 @@ abstract class ListingsEvent extends Equatable {
 class LoadListings extends ListingsEvent {}
 
 class CreateListing extends ListingsEvent {
+  final String id;
   final String title;
   final String author;
   final String condition;
@@ -15,6 +16,7 @@ class CreateListing extends ListingsEvent {
   final String ownerId;
 
   CreateListing({
+    required this.id,
     required this.title,
     required this.author,
     required this.condition,
@@ -23,5 +25,5 @@ class CreateListing extends ListingsEvent {
   });
 
   @override
-  List<Object?> get props => [title, author, condition, coverImage, ownerId];
+  List<Object?> get props => [id, title, author, condition, coverImage, ownerId];
 }

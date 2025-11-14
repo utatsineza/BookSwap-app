@@ -1,87 +1,62 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../blocs/listings/listings_bloc.dart';
-import '../../blocs/listings/listings_event.dart';
-import '../../blocs/listings/listings_state.dart';
 
 class CreateListingScreen extends StatefulWidget {
-  const CreateListingScreen({Key? key}) : super(key: key);
+  final Function(Map<String, String>) onCreate;
+
+  const CreateListingScreen({super.key, required this.onCreate});
 
   @override
   State<CreateListingScreen> createState() => _CreateListingScreenState();
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
-  final _titleCtl = TextEditingController();
-  final _authorCtl = TextEditingController();
-  String _condition = 'New';
-  File? _image;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _conditionController = TextEditingController();
 
-  final _picker = ImagePicker();
-  final String _currentUserId = "user_123"; // replace with actual auth ID
-
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-    if (picked != null) setState(() => _image = File(picked.path));
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final newBook = {
+        "title": _titleController.text,
+        "author": _authorController.text,
+        "condition": _conditionController.text,
+      };
+      widget.onCreate(newBook);
+      Navigator.pop(context); // close screen
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Listing')),
+      appBar: AppBar(title: const Text("Create Listing")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: BlocListener<ListingsBloc, ListingsState>(
-          listener: (context, state) {
-            if (state is ListingsError) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-            } else if (state is ListingsLoaded) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Listing created!')));
-              Navigator.of(context).pop();
-            }
-          },
-          child: ListView(
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
-              TextField(controller: _titleCtl, decoration: const InputDecoration(labelText: 'Title')),
-              TextField(controller: _authorCtl, decoration: const InputDecoration(labelText: 'Author')),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _condition,
-                items: ['New', 'Like New', 'Good', 'Used']
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (v) => setState(() => _condition = v ?? 'New'),
-                decoration: const InputDecoration(labelText: 'Condition'),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: "Title"),
+                validator: (value) =>
+                    value == null || value.isEmpty ? "Enter a title" : null,
               ),
-              const SizedBox(height: 12),
-              _image != null ? Image.file(_image!, height: 150) : const SizedBox(),
-              TextButton.icon(
-                onPressed: _pickImage,
-                icon: const Icon(Icons.image),
-                label: const Text('Pick cover image'),
+              TextFormField(
+                controller: _authorController,
+                decoration: const InputDecoration(labelText: "Author"),
+                validator: (value) =>
+                    value == null || value.isEmpty ? "Enter an author" : null,
+              ),
+              TextFormField(
+                controller: _conditionController,
+                decoration: const InputDecoration(labelText: "Condition"),
+                validator: (value) =>
+                    value == null || value.isEmpty ? "Enter condition" : null,
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_image == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Please pick a cover image.'),
-                    ));
-                    return;
-                  }
-                  // Send the file path as a string to the Bloc
-                  context.read<ListingsBloc>().add(CreateListing(
-                        title: _titleCtl.text.trim(),
-                        author: _authorCtl.text.trim(),
-                        condition: _condition,
-                        coverImage: _image!.path,
-                        ownerId: _currentUserId,
-                      ));
-                },
-                child: const Text('Create Listing'),
-              ),
+              ElevatedButton(onPressed: _submit, child: const Text("Add Book"))
             ],
           ),
         ),
