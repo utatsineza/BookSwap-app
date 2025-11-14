@@ -1,50 +1,45 @@
-// lib/presentation/blocs/listings/listings_bloc.dart
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'listings_event.dart';
 import 'listings_state.dart';
+import '../../models/book.dart';
 import '../../data/listings_service.dart';
-import '../../models/book.dart' ; // Make sure your Book model exists
 
 class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   final ListingsService service;
   StreamSubscription? _sub;
 
   ListingsBloc({required this.service}) : super(ListingsInitial()) {
-    // Handle LoadListingsEvent
-    on<LoadListingsEvent>(_onLoad);
-
-    // Handle CreateListing event
+    on<LoadListings>(_onLoad);
     on<CreateListing>(_onCreate);
-
-    // Handle internal updates from the stream
-    on<_ListingsUpdated>((event, emit) {
-      emit(ListingsLoaded(event.books.cast<Book>()));
-    });
+    on<_ListingsUpdated>(_onListingsUpdated); // internal event
   }
 
-  // Load all books from service
-  void _onLoad(LoadListingsEvent event, Emitter<ListingsState> emit) {
+  void _onLoad(LoadListings event, Emitter<ListingsState> emit) {
     emit(ListingsLoading());
     _sub?.cancel();
     _sub = service.streamAllBooks().listen(
-      (books) => add(_ListingsUpdated(books.cast<Book>())), // internal event
+      (books) => add(_ListingsUpdated(books)), // dispatch internal event
       onError: (err) => emit(ListingsError(err.toString())),
     );
   }
 
-  // Create a new listing
-  Future<void> _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
+  void _onCreate(CreateListing event, Emitter<ListingsState> emit) async {
     try {
       await service.createBook(
         title: event.title,
         author: event.author,
         condition: event.condition,
         coverImage: event.coverImage,
+        ownerId: event.ownerId,
       );
     } catch (err) {
       emit(ListingsError(err.toString()));
     }
+  }
+
+  void _onListingsUpdated(_ListingsUpdated event, Emitter<ListingsState> emit) {
+    emit(ListingsLoaded(event.books));
   }
 
   @override
@@ -54,7 +49,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   }
 }
 
-// Internal event to update state from the stream
+// Internal private event for Bloc stream updates
 class _ListingsUpdated extends ListingsEvent {
   final List<Book> books;
   _ListingsUpdated(this.books);

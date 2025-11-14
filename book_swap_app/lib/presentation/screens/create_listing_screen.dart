@@ -8,7 +8,9 @@ import '../../blocs/listings/listings_state.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({Key? key}) : super(key: key);
-  @override State<CreateListingScreen> createState() => _CreateListingScreenState();
+
+  @override
+  State<CreateListingScreen> createState() => _CreateListingScreenState();
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
@@ -18,6 +20,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   File? _image;
 
   final _picker = ImagePicker();
+  final String _currentUserId = "user_123"; // replace with actual auth ID
 
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
@@ -46,7 +49,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: _condition,
-                items: ['New', 'Like New', 'Good', 'Used'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                items: ['New', 'Like New', 'Good', 'Used']
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
                 onChanged: (v) => setState(() => _condition = v ?? 'New'),
                 decoration: const InputDecoration(labelText: 'Condition'),
               ),
@@ -60,12 +65,20 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  if (_image == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Please pick a cover image.'),
+                    ));
+                    return;
+                  }
+                  // Send the file path as a string to the Bloc
                   context.read<ListingsBloc>().add(CreateListing(
-                    title: _titleCtl.text.trim(),
-                    author: _authorCtl.text.trim(),
-                    condition: _condition,
-                    coverImage: _image,
-                  ));
+                        title: _titleCtl.text.trim(),
+                        author: _authorCtl.text.trim(),
+                        condition: _condition,
+                        coverImage: _image!.path,
+                        ownerId: _currentUserId,
+                      ));
                 },
                 child: const Text('Create Listing'),
               ),

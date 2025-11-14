@@ -1,7 +1,4 @@
-// lib/presentation/blocs/listings/listings_event.dart
-import 'dart:io';
 import 'package:equatable/equatable.dart';
-import '../../models/book.dart' ;
 
 abstract class ListingsEvent extends Equatable {
   @override
@@ -10,17 +7,21 @@ abstract class ListingsEvent extends Equatable {
 
 class LoadListings extends ListingsEvent {}
 
-class LoadListingsEvent extends ListingsEvent {}
-
-
 class CreateListing extends ListingsEvent {
   final String title;
   final String author;
   final String condition;
-  final File? coverImage;
+  final String coverImage;
+  final String ownerId;
 
-  CreateListing({required this.title, required this.author, required this.condition, this.coverImage});
+  CreateListing({
+    required this.title,
+    required this.author,
+    required this.condition,
+    required this.coverImage,
+    required this.ownerId,
+  });
 
   @override
-  List<Object?> get props => [title, author, condition, coverImage];
+  List<Object?> get props => [title, author, condition, coverImage, ownerId];
 }

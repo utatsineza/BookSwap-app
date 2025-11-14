@@ -1,18 +1,16 @@
-import 'package:book_swap_app/data/listings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'blocs/auth/auth_bloc.dart';
 import 'blocs/listings/listings_bloc.dart';
+import 'blocs/listings/listings_event.dart';
+import 'services/firebase_auth_service.dart';
+import 'data/listings_service.dart';
 import 'presentation/screens/browse_screen.dart';
 import 'presentation/screens/my_listings_screen.dart';
 import 'presentation/screens/chats_screen.dart';
 import 'presentation/screens/settings_screen.dart';
-import 'services/firebase_auth_service.dart';
-import 'package:book_swap_app/blocs/listings/listings_event.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +29,7 @@ class BookSwapApp extends StatelessWidget {
           create: (_) => AuthBloc(authService: FirebaseAuthService()),
         ),
         BlocProvider(
-          create: (_) => ListingsBloc(service: ListingsService())..add(LoadListingsEvent()),
+          create: (_) => ListingsBloc(service: ListingsService())..add(LoadListings()),
         ),
       ],
       child: MaterialApp(

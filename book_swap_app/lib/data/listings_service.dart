@@ -1,53 +1,71 @@
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'storage_service.dart';
-import '../domain/models/book_model.dart';
-import 'package:uuid/uuid.dart';
+import 'dart:async';
+import '../models/book.dart';
 
 class ListingsService {
-  final FirebaseFirestore _fs = FirebaseFirestore.instance;
-  final StorageService _storage = StorageService();
+  // Internal "database" of books
+  final List<Book> _books = [];
 
-  Stream<List<Book>> streamAllBooks() {
-    return _fs.collection('books')
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map((snap) =>
-          snap.docs.map((doc) => Book.fromMap(doc.data())).toList()
-        );
+  // Stream controller to broadcast changes
+  final StreamController<List<Book>> _booksController =
+      StreamController<List<Book>>.broadcast();
+
+  ListingsService() {
+    // Optional: pre-populate with some dummy books
+    _books.addAll([
+      Book(
+        id: '1',
+        title: 'Flutter for Beginners',
+        author: 'John Doe',
+        condition: 'New',
+        coverImage:
+            'https://flutter.dev/images/catalog-widget-placeholder.png',
+        ownerId: 'owner1',
+      ),
+      Book(
+        id: '2',
+        title: 'Dart in Action',
+        author: 'Jane Smith',
+        condition: 'Used',
+        coverImage:
+            'https://flutter.dev/images/catalog-widget-placeholder.png',
+        ownerId: 'owner2',
+      ),
+    ]);
+
+    // Emit initial data
+    _booksController.add(List.unmodifiable(_books));
   }
 
+  // Stream all books
+  Stream<List<Book>> streamAllBooks() {
+    return _booksController.stream;
+  }
+
+  // Create a new book listing
   Future<void> createBook({
     required String title,
     required String author,
     required String condition,
-    File? coverImage,
+    required String coverImage,
+    required String ownerId,
   }) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    final doc = _fs.collection('books').doc();
-    String? coverUrl;
-    if (coverImage != null) {
-      coverUrl = await _storage.uploadBookCover(coverImage, doc.id);
-    }
     final book = Book(
-      id: doc.id,
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
       author: author,
       condition: condition,
-      coverUrl: coverUrl,
-      ownerId: uid,
-      createdAt: DateTime.now(),
+      coverImage: coverImage,
+      ownerId: ownerId,
     );
-    await doc.set(book.toMap());
+
+    _books.add(book);
+
+    // Notify listeners
+    _booksController.add(List.unmodifiable(_books));
   }
 
-  Future<void> updateBook(Book book) async {
-    await _fs.collection('books').doc(book.id).update(book.toMap());
-  }
-
-  Future<void> deleteBook(String id) async {
-    await _fs.collection('books').doc(id).delete();
-    await _storage.deleteBookCover(id);
+  // Dispose the stream controller
+  void dispose() {
+    _booksController.close();
   }
 }
