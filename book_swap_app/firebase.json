@@ -1,1 +1,30 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"bookswap-app-72016","appId":"1:171205090830:android:1792479a52296eb13a665f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"bookswap-app-72016","configurations":{"android":"1:171205090830:android:1792479a52296eb13a665f","ios":"1:171205090830:ios:5e1ec5c5d1d48de53a665f","macos":"1:171205090830:ios:5e1ec5c5d1d48de53a665f","web":"1:171205090830:web:497c9bce5c5afce13a665f","windows":"1:171205090830:web:2f77d8f6a4b27aea3a665f"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "bookswap-55e98",
+          "appId": "1:560423501156:android:336932258d8f8265274e71",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "bookswap-55e98",
+          "configurations": {
+            "android": "1:560423501156:android:336932258d8f8265274e71",
+            "ios": "1:560423501156:ios:629ba543deb4ede5274e71",
+            "web": "1:560423501156:web:351075215c36d537274e71",
+            "windows": "1:560423501156:web:e82a095c56bb5d8a274e71"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "nam5",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

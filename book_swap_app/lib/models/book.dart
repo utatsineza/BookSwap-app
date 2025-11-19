@@ -54,16 +54,16 @@ class Book {
         'swapWithUserId': swapWithUserId,
       };
 
-  factory Book.fromMap(Map<String, dynamic> m) {
+  factory Book.fromMap(Map<String, dynamic> data, String id) {
     return Book(
-      id: m['id'] as String,
-      title: m['title'] as String,
-      author: m['author'] as String,
-      condition: m['condition'] as String,
-      ownerId: m['ownerId'] as String,
-      coverUrl: m['coverUrl'] as String?,
-      swapState: SwapState.values[(m['swapState'] ?? 0) as int],
-      swapWithUserId: m['swapWithUserId'] as String?,
+      id: id,
+      title: data['title'] as String? ?? '',
+      author: data['author'] as String? ?? '',
+      condition: data['condition'] as String? ?? '',
+      ownerId: data['ownerId'] as String? ?? '',
+      coverUrl: data['coverUrl'] as String?,
+      swapState: SwapState.values[(data['swapState'] ?? 0) as int],
+      swapWithUserId: data['swapWithUserId'] as String?,
     );
   }
 }
