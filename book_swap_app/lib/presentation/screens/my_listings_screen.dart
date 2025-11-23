@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/book_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'add_edit_book_screen.dart';
 
 class MyListingsScreen extends StatefulWidget {
   const MyListingsScreen({super.key});
@@ -23,7 +24,6 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
   @override
   Widget build(BuildContext context) {
     final bookProvider = context.watch<BookProvider>();
-    final auth = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,12 +31,24 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
         foregroundColor: Colors.white,
         title: const Text('My Listings'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddEditBookScreen(),
+            ),
+          );
+        },
+        backgroundColor: const Color(0xFFf4c542),
+        child: const Icon(Icons.add, color: Color(0xFF1a1a3e)),
+      ),
       body: bookProvider.isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFf4c542)))
           : bookProvider.books.isEmpty
               ? const Center(
                   child: Text(
-                    'No listings yet\nAdd your first book!',
+                    'No listings yet\nTap + to add your first book!',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
@@ -117,6 +129,19 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                                 ],
                               ),
                             ),
+                            // Edit Button
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Color(0xFFf4c542)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddEditBookScreen(book: book),
+                                  ),
+                                );
+                              },
+                            ),
+                            // Delete Button
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () async {
@@ -137,11 +162,13 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                                     ],
                                   ),
                                 );
-                                if (confirm == true) {
+                                if (confirm == true && mounted) {
                                   await bookProvider.deleteBook(book.id);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Book deleted')),
-                                  );
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Book deleted')),
+                                    );
+                                  }
                                 }
                               },
                             ),

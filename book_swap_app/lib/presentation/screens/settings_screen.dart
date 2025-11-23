@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import 'my_offers_screen.dart';
+import 'profile_screen.dart';
+import 'notifications_screen.dart';
+import 'help_support_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+  
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF1a1a3e),
@@ -22,15 +28,26 @@ class SettingsScreen extends StatelessWidget {
             color: const Color(0xFF1a1a3e),
             child: Column(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 40,
-                  backgroundColor: Color(0xFFf4c542),
-                  child: Icon(Icons.person, size: 50, color: Color(0xFF1a1a3e)),
+                  backgroundColor: const Color(0xFFf4c542),
+                  child: Text(
+                    auth.email?.substring(0, 1).toUpperCase() ?? 'U',
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1a1a3e),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   auth.email ?? 'Not logged in',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -56,8 +73,9 @@ class SettingsScreen extends StatelessWidget {
             title: 'Profile',
             subtitle: 'View and edit your profile',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Profile feature coming soon')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
             },
           ),
@@ -73,17 +91,34 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           
-          const Divider(),
+          const Divider(height: 32),
           
-          // App Section
-          _buildSectionTitle('App'),
+          // Preferences Section
+          _buildSectionTitle('Preferences'),
           _buildSettingsTile(
             icon: Icons.notifications,
             title: 'Notifications',
             subtitle: 'Manage notification preferences',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Notifications feature coming soon')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+              );
+            },
+          ),
+          
+          const Divider(height: 32),
+          
+          // Support Section
+          _buildSectionTitle('Support & Information'),
+          _buildSettingsTile(
+            icon: Icons.help,
+            title: 'Help & Support',
+            subtitle: 'Get help and contact support',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
               );
             },
           ),
@@ -95,26 +130,71 @@ class SettingsScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('About BookSwap'),
-                  content: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  title: Row(
                     children: [
-                      Text('BookSwap App', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      SizedBox(height: 8),
-                      Text('Version: 1.0.0'),
-                      SizedBox(height: 16),
-                      Text('A mobile application for students to exchange textbooks with each other.'),
-                      SizedBox(height: 16),
-                      Text('Features:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text('• Browse book listings'),
-                      Text('• Post your books'),
-                      Text('• Send swap offers'),
-                      Text('• Real-time chat'),
-                      Text('• Email verification'),
-                      SizedBox(height: 16),
-                      Text('© 2024 BookSwap. All rights reserved.'),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1a1a3e),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.menu_book,
+                          color: Color(0xFFf4c542),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text('About BookSwap'),
                     ],
+                  ),
+                  content: const SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'BookSwap',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Color(0xFF1a1a3e),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Version 1.0.0',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'A mobile application for students to exchange textbooks with each other.',
+                          style: TextStyle(height: 1.5),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Features:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text('📚 Browse book listings'),
+                        Text('➕ Post your books'),
+                        Text('🔄 Send swap offers'),
+                        Text('💬 Real-time chat'),
+                        Text('✅ Email verification'),
+                        SizedBox(height: 20),
+                        Text(
+                          '© 2024 BookSwap. All rights reserved.',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   actions: [
                     TextButton(
@@ -127,27 +207,18 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           _buildSettingsTile(
-            icon: Icons.help,
-            title: 'Help & Support',
-            subtitle: 'Get help and contact support',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help & Support feature coming soon')),
-              );
-            },
-          ),
-          _buildSettingsTile(
             icon: Icons.privacy_tip,
             title: 'Privacy Policy',
             subtitle: 'Read our privacy policy',
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Privacy Policy feature coming soon')),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
               );
             },
           ),
           
-          const Divider(),
+          const Divider(height: 32),
           
           // Logout Section
           Padding(
@@ -172,17 +243,26 @@ class SettingsScreen extends StatelessWidget {
                             Navigator.pop(context);
                             auth.logout();
                           },
-                          child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            'Logout',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
                   );
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('Logout', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -197,11 +277,12 @@ class SettingsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
-        title,
+        title.toUpperCase(),
         style: const TextStyle(
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
           color: Colors.grey,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -222,8 +303,14 @@ class SettingsScreen extends StatelessWidget {
         ),
         child: Icon(icon, color: const Color(0xFF1a1a3e)),
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 12, color: Colors.grey),
+      ),
       trailing: const Icon(Icons.chevron_right, color: Colors.grey),
       onTap: onTap,
     );

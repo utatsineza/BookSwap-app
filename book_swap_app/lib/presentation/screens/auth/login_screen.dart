@@ -80,13 +80,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () async {
-                            setState(() => loading = true);
-                            final error = await auth.login(_emailCtrl.text, _passCtrl.text);
-                            setState(() => loading = false);
-                            if (error != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                            if(mounted){
+                              setState(() => loading = true);
                             }
-                          },
+                            final error = await auth.login(_emailCtrl.text, _passCtrl.text);
+                            if(mounted){
+                              setState(() => loading = false);
+                                if (error != null) {
+                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                                }
+                              }
+                            },  
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFf4c542),
                             foregroundColor: const Color(0xFF1a1a3e),

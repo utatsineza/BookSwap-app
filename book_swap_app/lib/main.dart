@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
 
 import 'providers/auth_provider.dart';
@@ -22,6 +23,11 @@ void main() async {
   // Initialize Firebase with platform-specific configuration
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await Supabase.initialize(
+    url: 'https://tirnudbceprmdgjvdtnj.supabase.co',  // Replace with your URL
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpcm51ZGJjZXBybWRnanZkdG5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MjU3NjEsImV4cCI6MjA3OTQwMTc2MX0.M4AQpDCtru3jflxs9Uk7EOa7FPuiSbMRpKkT0soC3AQ',  // Replace with your anon key
   );
 
   runApp(const BookSwapApp());
