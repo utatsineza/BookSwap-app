@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ChatsScreen extends StatelessWidget {
   const ChatsScreen({super.key});
 
-  final List<String> dummyChats = const ["Alice", "Bob", "Charlie"];
+  final List<String> dummyChats = const ['Alice', 'Bob', 'Charlie'];
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ChatsScreen extends StatelessWidget {
           return ListTile(
             leading: const CircleAvatar(child: Icon(Icons.person)),
             title: Text(chat),
-            subtitle: const Text("Last message preview..."),
+            subtitle: const Text('Last message preview...'),
           );
         },
       ),

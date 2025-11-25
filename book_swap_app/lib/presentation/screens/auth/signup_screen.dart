@@ -97,7 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: ElevatedButton(
                           onPressed: () async {
                             setState(() => loading = true);
-                            final error = await auth.signup(_emailCtrl.text, _passCtrl.text, _nameCtrl.text);
+                            final error = await auth.signup(_emailCtrl.text, _passCtrl.text);
                             setState(() => loading = false);
                             if (error == null) {
                               ScaffoldMessenger.of(context).showSnackBar(

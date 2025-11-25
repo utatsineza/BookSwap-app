@@ -55,6 +55,7 @@ dependencies:
   equatable: ^2.0.5
   supabase_flutter: ^2.3.4
   url_launcher: ^6.3.2
+  bloc: ^8.1.0
 
 dev_dependencies:
   flutter_test:

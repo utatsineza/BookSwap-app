@@ -7,7 +7,7 @@ import '../models/book.dart';
 class BookProvider with ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   List<Book> _books = [];
   List<Book> get books => _books;
   bool isLoading = false;
@@ -24,7 +24,8 @@ class BookProvider with ChangeNotifier {
   Future<void> loadUserBooks(String userId) async {
     isLoading = true;
     notifyListeners();
-    final snapshot = await _db.collection('books').where('ownerId', isEqualTo: userId).get();
+    final snapshot =
+        await _db.collection('books').where('ownerId', isEqualTo: userId).get();
     _books = snapshot.docs.map((d) => Book.fromMap(d.data(), d.id)).toList();
     isLoading = false;
     notifyListeners();
@@ -126,7 +127,7 @@ class BookProvider with ChangeNotifier {
   Future<void> deleteBook(String id) async {
     try {
       final book = _books.firstWhere((b) => b.id == id);
-      
+
       // Delete image if exists
       if (book.coverUrl != null && book.coverUrl!.isNotEmpty) {
         await _deleteImageFromSupabase(book.coverUrl!);
@@ -141,22 +142,26 @@ class BookProvider with ChangeNotifier {
   }
 
   // Helper: Upload image to Supabase Storage
-  Future<String> _uploadImageToSupabase(File imageFile, String identifier) async {
+  Future<String> _uploadImageToSupabase(
+      File imageFile, String identifier) async {
     try {
-      final fileName = '${identifier}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final currentUser = _supabase.auth.currentUser;
+      print('🔍 Supabase user: ${currentUser?.id}');
+      print('🔍 User email: ${currentUser?.email}');
+      print('🔍 Session exists: ${_supabase.auth.currentSession != null}');
+
+      final fileName =
+          '${identifier}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = 'book_covers/$fileName';
 
       print('Uploading to Supabase: $filePath');
 
       // Upload file
-      await _supabase.storage
-          .from('book-covers')
-          .upload(filePath, imageFile);
+      await _supabase.storage.from('book_covers').upload(filePath, imageFile);
 
       // Get public URL
-      final publicUrl = _supabase.storage
-          .from('book-covers')
-          .getPublicUrl(filePath);
+      final publicUrl =
+          _supabase.storage.from('book_covers').getPublicUrl(filePath);
 
       print('Upload successful: $publicUrl');
       return publicUrl;
@@ -170,19 +175,19 @@ class BookProvider with ChangeNotifier {
   Future<void> _deleteImageFromSupabase(String imageUrl) async {
     try {
       // Extract file path from URL
-      // URL format: https://xxxxx.supabase.co/storage/v1/object/public/book-covers/path/to/file.jpg
+      // URL format: https://xxxxx.supabase.co/storage/v1/object/public/book_covers/path/to/file.jpg
       final uri = Uri.parse(imageUrl);
       final pathSegments = uri.pathSegments;
-      
-      // Find the index of 'book-covers' and get everything after it
-      final bucketIndex = pathSegments.indexOf('book-covers');
+
+      // Find the index of 'book_covers' and get everything after it
+      final bucketIndex = pathSegments.indexOf('book_covers');
       if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
         final filePath = pathSegments.sublist(bucketIndex + 1).join('/');
-        
+
         print('Deleting from Supabase: book_covers/$filePath');
-        
+
         await _supabase.storage
-            .from('book-covers')
+            .from('book_covers')
             .remove(['book_covers/$filePath']);
       }
     } catch (e) {
